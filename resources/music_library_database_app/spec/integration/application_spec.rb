@@ -72,6 +72,45 @@ describe Application do
     end
   end
 
+  context "GET /albums/new" do
+    it 'returns the form page' do 
+      response = get("/albums/new")
+
+      expect(response.status).to eq 200
+      expect(response.body).to include('<h1>Add a Album</h1>')
+      expect(response.body).to include('<form action="/albums" method="POST">') 
+      expect(response.body).to include('<input type="text" name="title"><br /><br />') 
+      expect(response.body).to include('<input type="text" name="release_year"><br /><br />') 
+      expect(response.body).to include('<input type="text" name="artist_id"><br /><br />')
+      expect(response.body).to include('<input type="submit">') 
+    end
+  end
+
+
+  context "POST /albums" do
+    it 'creates a new album and returns a confirmation page' do
+      
+      response = post("/albums", title: "Voyage", release_year: "2022", artist_id: 2)
+      expect(response.status).to eq(200)
+      expect(response.body).to include('<h1>You have saved Voyage</h1>')
+     
+      response = get("/albums")
+      expect(response.status).to eq 200
+      expect(response.body).to include('<a href="/albums/13">Voyage</a>')
+    end
+
+    it 'creates a different new album and returns a confirmation page' do
+      
+      response = post("/albums", title: "Doggerel", release_year: "2022", artist_id: 1)
+      expect(response.status).to eq(200)
+      expect(response.body).to include('<h1>You have saved Doggerel</h1>')
+     
+      response = get("/albums")
+      expect(response.status).to eq 200
+      expect(response.body).to include('<a href="/albums/13">Doggerel</a>')
+    end
+  end
+
 
   # context "GET /albums" do
   #   it "returns list of album titles" do
