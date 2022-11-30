@@ -73,6 +73,7 @@ describe Application do
   end
 
   context "GET /albums/new" do
+
     it 'returns the form page' do 
       response = get("/albums/new")
 
@@ -81,16 +82,23 @@ describe Application do
       expect(response.body).to include('<form action="/albums" method="POST">') 
       expect(response.body).to include('<input type="text" name="title"><br /><br />') 
       expect(response.body).to include('<input type="text" name="release_year"><br /><br />') 
-      expect(response.body).to include('<input type="text" name="artist_id"><br /><br />')
+      expect(response.body).to include('<select name="artist"><br /><br />')
       expect(response.body).to include('<input type="submit">') 
+      expect(response.body).to include('<option>Pixies</option>') 
+      expect(response.body).to include('<option>ABBA</option>') 
     end
   end
 
-
   context "POST /albums" do
+
+    it 'validates the parameters' do
+      response = post("/albums", title: "", release_year: "", artist: "")
+      expect(response.status).to eq(400)
+    end
+
     it 'creates a new album and returns a confirmation page' do
       
-      response = post("/albums", title: "Voyage", release_year: "2022", artist_id: 2)
+      response = post("/albums", title: "Voyage", release_year: "2022", artist: "ABBA")
       expect(response.status).to eq(200)
       expect(response.body).to include('<h1>You have saved Voyage</h1>')
      
@@ -101,13 +109,58 @@ describe Application do
 
     it 'creates a different new album and returns a confirmation page' do
       
-      response = post("/albums", title: "Doggerel", release_year: "2022", artist_id: 1)
+      response = post("/albums", title: "Doggerel", release_year: "2022", artist: "Pixies")
       expect(response.status).to eq(200)
       expect(response.body).to include('<h1>You have saved Doggerel</h1>')
      
       response = get("/albums")
       expect(response.status).to eq 200
       expect(response.body).to include('<a href="/albums/13">Doggerel</a>')
+    end
+  end
+
+  context "GET /artists/new" do
+
+    it 'returns the form page' do 
+      response = get("/artists/new")
+
+      expect(response.status).to eq 200
+      expect(response.body).to include('<h1>Add a Artist</h1>')
+      expect(response.body).to include('<form action="/artists" method="POST">') 
+      expect(response.body).to include('<input type="text" name="name"><br /><br />') 
+      expect(response.body).to include('<input type="text" name="genre"><br /><br />') 
+      expect(response.body).to include('<input type="submit">') 
+
+    end
+  end
+
+  context "POST /artists" do
+
+    it 'validates the parameters' do
+      response = post("/artists", name: "", genre: "")
+      expect(response.status).to eq(400)
+    end
+
+    it 'creates a new artist and returns a confirmation page' do
+      
+      response = post("/artists", name: "Radiohead", genre: "Alternative")
+      expect(response.status).to eq(200)
+      expect(response.body).to include('<h1>You have saved Radiohead</h1>')
+     
+      response = get("/artists")
+      expect(response.status).to eq 200
+      expect(response.body).to include('<a href="/artists/5">Radiohead</a>')
+    end
+
+   it 'creates a different new album and returns a confirmation page' do
+      
+      response = post("/artists", name: "Stormzy", genre: "Hip-Hop")
+      expect(response.status).to eq(200)
+      expect(response.body).to include('<h1>You have saved Stormzy</h1>')
+     
+      response = get("/artists")
+      expect(response.status).to eq 200
+      expect(response.body).to include('<a href="/artists/5">Stormzy</a>')
     end
   end
 
