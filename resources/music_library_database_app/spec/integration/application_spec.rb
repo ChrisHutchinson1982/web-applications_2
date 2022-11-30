@@ -34,18 +34,44 @@ describe Application do
       expect(response.body).to include('Artist: Pixies')
     end
   end
-  
+
   context "GET /albums" do
-    it "returns list of album on html page" do
+    it "returns list of albums with dynamic link to /albums/:id" do
       response = get("/albums")
       expect(response.status).to eq 200
       expect(response.body).to include('<h1>Albums</h1>')
-      expect(response.body).to include('Title: Doolittle')
-      expect(response.body).to include('Released: 1989')
-      expect(response.body).to include('Title: Ring Ring')
-      expect(response.body).to include('Released: 1973')
+      expect(response.body).to include('<a href="/albums/1">Doolittle</a><br />')
+      expect(response.body).to include('Released: 1989<br /><br />')
+      expect(response.body).to include('<a href="/albums/12">Ring Ring</a>')
+      expect(response.body).to include('Released: 1973<br /><br />')
     end
   end
+
+
+  context "GET /artists/:id" do 
+    it "returns info. from artist 1" do 
+      response = get("/artists/1")
+      expect(response.body).to include('<h1>Pixies</h1>')
+      expect(response.body).to include('Genre: Rock')
+    end
+    it "returns info. from artist 1" do 
+      response = get("/artists/2")
+      expect(response.body).to include('<h1>ABBA</h1>')
+      expect(response.body).to include('Genre: Pop')
+    end
+  end
+
+  context "GET /artists" do 
+    it "returns list of artists with dynamic link to /artist/:id" do
+      response = get("/artists")
+      expect(response.status).to eq 200
+      expect(response.body).to include('<h1>Artists</h1>')
+      expect(response.body).to include('<a href="/artists/1">Pixies</a><br />')
+      expect(response.body).to include('<a href="/artists/2">ABBA</a><br />')
+      expect(response.body).to include('<a href="/artists/3">Taylor Swift</a><br />')
+    end
+  end
+
 
   # context "GET /albums" do
   #   it "returns list of album titles" do
@@ -69,26 +95,16 @@ describe Application do
   #   end
   # end
 
-  context "GET /artists" do 
-    it "returns list of album names" do
-      response = get("artists")
-      expected_response = "Pixies, ABBA, Taylor Swift, Nina Simone, Kiasmos"
-      expect(response.status).to eq 200
-      expect(response.body).to eq(expected_response)
-    end
-  end
+  # context "POST /artists" do
+  #   it 'creates a new artist' do 
+  #     response = post("/artists", name: "Wild nothing", genre: "Indie")
+  #     expect(response.status).to eq(200)
+  #     expect(response.body).to eq ('')
 
-
-  context "POST /artists" do
-    it 'creates a new artist' do 
-      response = post("/artists", name: "Wild nothing", genre: "Indie")
-      expect(response.status).to eq(200)
-      expect(response.body).to eq ('')
-
-      response = get("/artists")
-      expected_response = "Pixies, ABBA, Taylor Swift, Nina Simone, Kiasmos, Wild nothing"
-      expect(response.status).to eq 200
-      expect(response.body).to eq(expected_response)
-    end
-  end
+  #     response = get("/artists")
+  #     expected_response = "Pixies, ABBA, Taylor Swift, Nina Simone, Wild nothing"
+  #     expect(response.status).to eq 200
+  #     expect(response.body).to eq(expected_response)
+  #   end
+  # end
 end
