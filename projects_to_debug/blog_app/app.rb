@@ -22,7 +22,7 @@ class Application < Sinatra::Base
 
   # get posts for a given tag
   get '/tag/:tag' do
-    @posts = @post_manager.all_posts_by_tag(params[:tag])
+    @posts = @post_manager.all_posts_by_gotag(params[:tag])
 
     return erb(:index)
   end
